@@ -1,6 +1,21 @@
 import sqlite3
+import os
+import sys
+from pathlib import Path
 
-def insert_fixtures(fixtures, db_path="data/db/database.sqlite"):
+# Adicionar a raiz do projeto e o diretório `src` ao sys.path
+BASE_DIR = Path(__file__).resolve().parents[2]
+SRC_DIR = BASE_DIR / "src"
+
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))  # Para importar `config.settings`
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))  # Para importar `utils.file_utils`
+
+from config.settings import DB_PATH
+
+def insert_fixtures(fixtures, db_path=DB_PATH):
     """
     Insere dados de fixtures no banco de dados.
     """
@@ -26,3 +41,25 @@ def insert_fixtures(fixtures, db_path="data/db/database.sqlite"):
         connection.close()
     except Exception as e:
         raise RuntimeError(f"Erro ao inserir fixtures: {e}")
+    
+def insert_teams(teams, db_path=DB_PATH):
+    """
+    Insere dados de times no banco de dados.
+    """
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        for team in teams:
+            cursor.execute("""
+                INSERT INTO teams (team_id, name, country, founded, venue_id)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(team_id) DO NOTHING
+            """, (
+                team["team_id"], team["name"], team["country"], team["founded"], team["venue_id"]
+            ))
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        raise RuntimeError(f"Erro ao inserir times: {e}")
+
