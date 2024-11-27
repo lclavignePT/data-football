@@ -57,3 +57,24 @@ def get_stored_team_ids(league_id, db_path=DB_PATH):
     except Exception as e:
         raise RuntimeError(f"Erro ao consultar times no banco: {e}")
     
+def get_venue_ids_from_fixtures(db_path=DB_PATH):
+    """
+    Consulta todos os venue_id únicos da tabela fixtures.
+    """
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            SELECT DISTINCT venue_id 
+            FROM fixtures 
+            WHERE venue_id IS NOT NULL
+        """)
+        venue_ids = [row[0] for row in cursor.fetchall()]
+
+        connection.close()
+        return venue_ids
+    except Exception as e:
+        raise RuntimeError(f"Erro ao consultar venue_id: {e}")
+
+    
