@@ -13,7 +13,7 @@ if str(BASE_DIR) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))  # Para importar `utils.file_utils`
 
-from src.utils.logger import log_message
+from utils.logger import log_message
 
 LOG_FILE = "data/logs/setup.log"
 
