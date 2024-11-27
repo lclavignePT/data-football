@@ -1,4 +1,21 @@
 import sqlite3
+import os
+import sys
+from pathlib import Path
+
+# Adicionar a raiz do projeto e o diretório `src` ao sys.path
+BASE_DIR = Path(__file__).resolve().parents[2]
+SRC_DIR = BASE_DIR / "src"
+
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))  # Para importar `config.settings`
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))  # Para importar `utils.file_utils`
+
+from src.utils.logger import log_message
+
+LOG_FILE = "data/logs/setup.log"
 
 # Definição das tabelas
 CREATE_TABLES = [
@@ -83,18 +100,35 @@ def create_database(db_path="data/db/database.sqlite"):
     """
     Conecta ao banco de dados SQLite e cria as tabelas necessárias.
     """
-    connection = sqlite3.connect(db_path)
-    cursor = connection.cursor()
+    try:
+        # Iniciar log
+        log_message("INFO", "Iniciando configuração do banco de dados...", LOG_FILE, to_console=True)
+        
+        # Garante que o diretório do banco de dados exista
+        db_dir = os.path.dirname(db_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
 
-    # Criar as tabelas
-    for table_sql in CREATE_TABLES:
-        cursor.execute(table_sql)
+        # Conectar ao banco
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
 
-    # Confirmar as alterações e fechar a conexão
-    connection.commit()
-    connection.close()
+        # Criar tabelas
+        for table_sql in CREATE_TABLES:
+            cursor.execute(table_sql)
+
+        # Confirmar alterações
+        connection.commit()
+        connection.close()
+
+        # Log de sucesso
+        log_message("INFO", f"Banco de dados configurado com sucesso em {db_path}", LOG_FILE, to_console=True)
+
+    except Exception as e:
+        # Log de erro
+        log_message("ERROR", f"Erro ao configurar o banco de dados: {str(e)}", LOG_FILE, to_console=True)
+        raise
+
 
 if __name__ == "__main__":
-    print("Criando o banco de dados e as tabelas...")
     create_database()
-    print("Banco de dados configurado com sucesso!")
