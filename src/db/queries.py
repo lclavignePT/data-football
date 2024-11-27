@@ -34,7 +34,7 @@ def get_stored_fixture_ids(league_id, season, db_path=DB_PATH):
     except Exception as e:
         raise RuntimeError(f"Erro ao consultar fixtures no banco: {e}")
 
-def get_stored_team_ids(league_id, db_path="data/db/database.sqlite"):
+def get_stored_team_ids(league_id, db_path=DB_PATH):
     """
     Retorna uma lista de team_ids já armazenados no banco para uma liga específica.
     """
