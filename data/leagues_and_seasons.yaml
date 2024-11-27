@@ -1,0 +1,25 @@
+leagues:
+  - id: 39
+    name: Premier League
+    country: England
+  - id: 40
+    name: Championship
+    country: England
+  - id: 78
+    name: Bundesliga
+    country: Germany
+  - id: 79
+    name: Bundesliga2
+    country: Germany
+  - id: 140
+    name: LaLiga
+    country: Spain
+  - id: 141
+    name: LaLiga 2
+    country: Spain
+seasons:
+  - 2024
+  - 2023
+  - 2022
+  - 2021
+  - 2020
