@@ -25,6 +25,7 @@ CREATE_TABLES = [
         league_id INTEGER NOT NULL,
         season INTEGER NOT NULL,
         date TEXT NOT NULL,
+        timestamp INTEGER,
         venue_id INTEGER,
         referee TEXT,
         home_team_id INTEGER NOT NULL,
@@ -34,6 +35,7 @@ CREATE_TABLES = [
         halftime_home_goals INTEGER,
         halftime_away_goals INTEGER
     );
+
     """,
     """
     CREATE TABLE IF NOT EXISTS teams (
@@ -41,7 +43,8 @@ CREATE_TABLES = [
         name TEXT NOT NULL,
         country TEXT,
         founded INTEGER,
-        venue_id INTEGER
+        venue_id INTEGER,
+        FOREIGN KEY (venue_id) REFERENCES venues(venue_id)
     );
     """,
     """
