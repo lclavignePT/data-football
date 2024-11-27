@@ -63,3 +63,24 @@ def insert_teams(teams, db_path=DB_PATH):
     except Exception as e:
         raise RuntimeError(f"Erro ao inserir times: {e}")
 
+def insert_venue(data, db_path=DB_PATH):
+    """
+    Insere um venue na tabela venues.
+    """
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        cursor.execute("""
+            INSERT INTO venues (venue_id, name, capacity, city, surface)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(venue_id) DO NOTHING
+        """, (
+            data["venue_id"], data["name"], data["capacity"],
+            data["city"], data["surface"]
+        ))
+
+        connection.commit()
+        connection.close()
+    except Exception as e:
+        raise RuntimeError(f"Erro ao inserir venue: {e}")
