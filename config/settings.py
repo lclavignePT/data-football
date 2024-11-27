@@ -14,6 +14,7 @@ URL_BASE = os.getenv("URL_BASE", "https://v3.football.api-sports.io/")
 DB_PATH = Path(os.getenv("DB_PATH", "data/db/database.sqlite"))
 LOG_DIR = Path(os.getenv("LOG_PATH", "data/logs"))
 REQUEST_COUNT_FILE = BASE_DIR / "data/logs/request_count.yaml"
+LEAGUES_SEASONS = BASE_DIR / "data/leagues_and_seasons.yaml"
 
 # Criar diretórios padrão, se não existirem
 os.makedirs(LOG_DIR, exist_ok=True)
