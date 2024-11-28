@@ -11,7 +11,7 @@ if str(BASE_DIR) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))  # Para importar `utils.file_utils`
 
-from controllers.fixture_controller import ingest_fixtures
+from controllers.fixtures_id_controller import FixtureIDController
 from controllers.team_controller import ingest_teams
 from controllers.venue_controller import ingest_venues
 from utils.logger import log_message
@@ -25,9 +25,11 @@ if not LOG_DIR.exists():
 if __name__ == "__main__":
     try:
         log_message("INFO", "Iniciando fluxo de ingestão de dados.", log_file=LOG_FILE, to_console=True)
-        #ingest_fixtures()
+
+        #FixtureIDController.ingest_fixtures_ids()
         #ingest_teams()
         #ingest_venues()
+
         log_message("INFO", "Fluxo concluído com sucesso!", log_file=LOG_FILE, to_console=True)
     except Exception as e:
         log_message("ERROR", f"Erro inesperado: {e}", log_file=LOG_FILE, to_console=True)
