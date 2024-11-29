@@ -45,3 +45,39 @@ def update_fixture_processed_status(fixture_id, db_path=DB_PATH):
         raise RuntimeError(f"Erro ao atualizar o status do fixture_id {fixture_id}: {e}")
     finally:
         connection.close()
+
+def get_coach_ids_from_fixtures(db_path=DB_PATH):
+    """
+    Executa a consulta SQL para obter os coach_id únicos
+    das tabelas fixture_startXI e fixture_substitutes.
+
+    :param db_path: Caminho para o arquivo do banco de dados SQLite.
+    :return: Lista de coach_id distintos.
+    """
+    query = """
+    WITH
+    -- União de todos os CoachId das duas tabelas
+    all_coach_ids AS (
+        SELECT coach_id FROM fixture_startXI
+        UNION ALL
+        SELECT coach_id FROM fixture_substitutes
+    )
+    -- Seleciona apenas os CoachId distintos no conjunto All, excluindo valores NULL
+    SELECT DISTINCT coach_id
+    FROM all_coach_ids
+    WHERE coach_id IS NOT NULL;
+    """
+    try:
+        # Usar context manager para conexão com SQLite
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+
+            # Executar a consulta e recuperar os resultados
+            cursor.execute(query)
+            coach_ids = [row[0] for row in cursor.fetchall()]
+
+        # Adicionar log para validação
+        print(f"Coach IDs encontrados: {len(coach_ids)}")  # DEBUG: Log para verificar retorno
+        return coach_ids
+    except sqlite3.Error as e:
+        raise Exception(f"Erro ao consultar os coach_id: {e}")
