@@ -6,3 +6,4 @@ venv
 logs
 data/update_fixture_1216034.json
 data/profiles.json.gz
+tests
