@@ -67,7 +67,7 @@ def get_venue_ids_from_fixtures(db_path=DB_PATH):
 
         cursor.execute("""
             SELECT DISTINCT venue_id 
-            FROM fixtures 
+            FROM teams 
             WHERE venue_id IS NOT NULL
         """)
         venue_ids = [row[0] for row in cursor.fetchall()]
