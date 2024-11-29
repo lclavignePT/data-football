@@ -21,7 +21,8 @@ LOG_FILE = LOG_DIR / "update.log"
 if not LOG_DIR.exists():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-if __name__ == "__main__":
+def run_update():
+
     try:
         log_message("INFO", "Iniciando atualização de fixtures detalhados.", log_file=LOG_FILE, to_console=True)
 
@@ -37,3 +38,6 @@ if __name__ == "__main__":
         log_message("INFO", "Atualização de fixtures detalhados concluída com sucesso!", log_file=LOG_FILE, to_console=True)
     except Exception as e:
         log_message("ERROR", f"Erro inesperado: {e}", log_file=LOG_FILE, to_console=True)
+
+if __name__ == "__main__":
+    run_update()
