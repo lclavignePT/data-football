@@ -14,7 +14,7 @@ if str(SRC_DIR) not in sys.path:
 from controllers.update_fixtures_controller import UpdateFixtureController
 from utils.logger import log_message
 from config.settings import LOG_DIR
-from db.helpers import get_unprocessed_fixture_ids  # Função hipotética para buscar fixtures não processados
+from db.helpers import get_unprocessed_fixture_ids
 
 LOG_FILE = LOG_DIR / "update.log"
 
