@@ -257,3 +257,30 @@ def insert_player_statistics(player_statistics, db_path=DB_PATH):
         raise RuntimeError(f"Erro ao inserir estatísticas de jogador: {e}")
     finally:
         connection.close()
+
+def insert_coach(coach_data, db_path=DB_PATH):
+    """
+    Insere um coach no banco de dados.
+
+    :param coach_data: Dicionário contendo os dados do coach (coach_id e name).
+    :param db_path: Caminho para o arquivo do banco de dados SQLite.
+    """
+    query = """
+    INSERT OR IGNORE INTO coachs (coach_id, name)
+    VALUES (?, ?);
+    """
+    try:
+        # Conecta ao banco de dados SQLite
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # Executa o comando de inserção
+        cursor.execute(query, (coach_data["coach_id"], coach_data["name"]))
+
+        # Confirma a transação
+        conn.commit()
+
+        # Fecha a conexão
+        conn.close()
+    except sqlite3.Error as e:
+        raise Exception(f"Erro ao inserir o coach no banco de dados: {e}")
