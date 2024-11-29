@@ -27,19 +27,27 @@ class FixtureIDController:
         Orquestra o fluxo de coleta e inserção de dados na tabela fixtures_id_processed.
         """
         try:
-            # Carregar configurações de ligas e temporadas
+            # Carregar configurações de ligas e temporadas do arquivo YAML
             with open(config_file, "r") as file:
                 config = yaml.safe_load(file)
 
             for league in config["leagues"]:
                 league_id = league["id"]
+                league_name = league["name"]
+
                 for season in league["seasons"]:
-                    log_message("INFO", f"Buscando fixtures para Liga {league['name']} Temporada {season}.", log_file=LOG_FILE)
+                    # Verificar se a temporada já foi processada
+                    if season.get("processed", False):
+                        log_message("INFO", f"Temporada {season['year']} da Liga {league_name} já processada. Ignorando.", log_file=LOG_FILE)
+                        continue
+
+                    season_year = season["year"]
+                    log_message("INFO", f"Buscando fixtures para Liga {league_name} Temporada {season_year}.", log_file=LOG_FILE)
 
                     # Buscar dados da API
-                    data = FixtureIDAPI.get_fixtures_ids(league_id, season)
+                    data = FixtureIDAPI.get_fixtures_ids(league_id, season_year)
                     if not data:
-                        log_message("WARNING", f"Sem dados para Liga {league['name']} Temporada {season}.", log_file=LOG_FILE, to_console=True)
+                        log_message("WARNING", f"Sem dados para Liga {league_name} Temporada {season_year}.", log_file=LOG_FILE, to_console=True)
                         continue
 
                     # Processar dados
@@ -48,8 +56,15 @@ class FixtureIDController:
                     # Inserir dados no banco
                     if processed_ids:
                         insert_fixtures_ids(processed_ids)
-                        log_message("INFO", f"Fixtures inseridas com sucesso para Liga {league['name']} Temporada {season}.", log_file=LOG_FILE)
+                        log_message("INFO", f"Fixtures inseridas com sucesso para Liga {league_name} Temporada {season_year}.", log_file=LOG_FILE)
+                        # Marcar a temporada como processada
+                        season["processed"] = True
                     else:
-                        log_message("INFO", f"Nenhuma nova fixture para inserir na Liga {league['name']} Temporada {season}.", log_file=LOG_FILE, to_console=True)
+                        log_message("INFO", f"Nenhuma nova fixture para inserir na Liga {league_name} Temporada {season_year}.", log_file=LOG_FILE, to_console=True)
+
+            # Atualizar o arquivo YAML com as mudanças
+            with open(config_file, "w") as file:
+                yaml.safe_dump(config, file)
+
         except Exception as e:
             log_message("ERROR", f"Erro no fluxo de ingestão: {e}", log_file=LOG_FILE, to_console=True)

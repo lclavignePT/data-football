@@ -29,16 +29,23 @@ def ingest_teams(config_file=LEAGUES_SEASONS):
 
         for league in config["leagues"]:
             league_id = league["id"]
+            league_name = league["name"]
+
             for season in league["seasons"]:
+                # Obter o ano da temporada e verificar se está processada
+                season_year = season["year"]
+
+                log_message("INFO", f"Buscando times para Liga {league_name} Temporada {season_year}.", 
+                            "data/logs/team_ingest.log", to_console=True)
+
                 # Verificar quais teams já estão no banco
                 stored_team_ids = get_stored_team_ids(league_id)
 
-                log_message("INFO", f"Buscando times para Liga {league['name']} Temporada {season}.", "data/logs/team_ingest.log", to_console=True)
-
                 # Buscar dados da API
-                data = TeamAPI.get_teams(league_id, season)
+                data = TeamAPI.get_teams(league_id, season_year)
                 if not data:
-                    log_message("WARNING", f"Sem dados para Liga {league['name']} Temporada {season}.", "data/logs/team_ingest.log", to_console=True)
+                    log_message("WARNING", f"Sem dados para Liga {league_name} Temporada {season_year}.", 
+                                "data/logs/team_ingest.log", to_console=True)
                     continue
 
                 # Filtrar times novos
@@ -49,7 +56,11 @@ def ingest_teams(config_file=LEAGUES_SEASONS):
 
                 if teams_to_insert:
                     insert_teams(teams_to_insert)
+                    log_message("INFO", f"Times inseridos com sucesso na Liga {league_name} Temporada {season_year}.", 
+                                "data/logs/team_ingest.log", to_console=True)
                 else:
-                    log_message("INFO", f"Nenhum novo time para inserir na Liga {league['name']} Temporada {season}.", "data/logs/team_ingest.log", to_console=True)
+                    log_message("INFO", f"Nenhum novo time para inserir na Liga {league_name} Temporada {season_year}.", 
+                                "data/logs/team_ingest.log", to_console=True)
     except Exception as e:
-        log_message("ERROR", f"Erro no fluxo de ingestão de times: {e}", "data/logs/team_ingest.log", to_console=True)
+        log_message("ERROR", f"Erro no fluxo de ingestão de times: {e}", 
+                    "data/logs/team_ingest.log", to_console=True)
