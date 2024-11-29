@@ -14,6 +14,7 @@ if str(SRC_DIR) not in sys.path:
 from controllers.fixtures_id_controller import FixtureIDController
 from controllers.team_controller import ingest_teams
 from controllers.venue_controller import ingest_venues
+from controllers.coach_controller import ingest_coachs
 from utils.logger import log_message
 from config.settings import LOG_DIR
 
@@ -29,6 +30,7 @@ if __name__ == "__main__":
         #FixtureIDController.ingest_fixtures_ids()
         #ingest_teams()
         #ingest_venues()
+        #ingest_coachs()
 
         log_message("INFO", "Fluxo concluído com sucesso!", log_file=LOG_FILE, to_console=True)
     except Exception as e:
