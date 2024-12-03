@@ -14,6 +14,10 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))  # Para importar `utils.file_utils`
 
 from config.settings import DB_PATH
+from utils.logger import log_message
+from config.settings import LOG_DIR
+
+LOG_FILE = LOG_DIR / "db_insert.log"
 
 def insert_fixtures_ids(fixtures, db_path=DB_PATH):
     """
@@ -284,3 +288,53 @@ def insert_coach(coach_data, db_path=DB_PATH):
         conn.close()
     except sqlite3.Error as e:
         raise Exception(f"Erro ao inserir o coach no banco de dados: {e}")
+
+def insert_odds(db_path, fixture_id, odds_data):
+    query = """
+        INSERT INTO odds (
+    fixture_id, home_win, draw, away_win,
+    over_0_5, under_0_5, over_1_5, under_1_5,
+    over_2_5, under_2_5, over_3_5, under_3_5,
+    over_4_5, under_4_5, over_5_5, under_5_5,
+    over_6_5, under_6_5, updated_at
+) VALUES (
+    :fixture_id, :home_win, :draw, :away_win,
+    :over_0_5, :under_0_5, :over_1_5, :under_1_5,
+    :over_2_5, :under_2_5, :over_3_5, :under_3_5,
+    :over_4_5, :under_4_5, :over_5_5, :under_5_5,
+    :over_6_5, :under_6_5, :updated_at
+)
+ON CONFLICT(fixture_id) DO UPDATE SET
+    home_win = excluded.home_win,
+    draw = excluded.draw,
+    away_win = excluded.away_win,
+    over_0_5 = excluded.over_0_5,
+    under_0_5 = excluded.under_0_5,
+    over_1_5 = excluded.over_1_5,
+    under_1_5 = excluded.under_1_5,
+    over_2_5 = excluded.over_2_5,
+    under_2_5 = excluded.under_2_5,
+    over_3_5 = excluded.over_3_5,
+    under_3_5 = excluded.under_3_5,
+    over_4_5 = excluded.over_4_5,
+    under_4_5 = excluded.under_4_5,
+    over_5_5 = excluded.over_5_5,
+    under_5_5 = excluded.under_5_5,
+    over_6_5 = excluded.over_6_5,
+    under_6_5 = excluded.under_6_5,
+    updated_at = excluded.updated_at;
+
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        for odds in odds_data:
+            odds["fixture_id"] = fixture_id
+            cursor.execute(query, odds)
+
+        conn.commit()
+        conn.close()
+        log_message("INFO", f"Odds inseridas para fixture_id {fixture_id}.", log_file=LOG_FILE)
+    except sqlite3.Error as e:
+        log_message("ERROR", f"Erro ao inserir odds para fixture_id {fixture_id}: {e}", log_file=LOG_FILE)

@@ -1,7 +1,10 @@
 # TODO: Ajustar para incluir funcao log_message
 import sqlite3
 import time
-from config.settings import DB_PATH
+from config.settings import DB_PATH, LOG_DIR
+from utils.logger import log_message
+
+LOG_FILE = LOG_DIR / "db_helper.log"
 
 def get_unprocessed_fixture_ids(db_path=DB_PATH):
     """
@@ -81,3 +84,24 @@ def get_coach_ids_from_fixtures(db_path=DB_PATH):
         return coach_ids
     except sqlite3.Error as e:
         raise Exception(f"Erro ao consultar os coach_id: {e}")
+
+def get_fixture_ids_after_date(start_date, db_path=DB_PATH):
+    """
+    Busca os fixture_id no banco de dados com timestamp maior ou igual à data especificada.
+    """
+    query = """
+        SELECT fixture_id
+        FROM fixtures
+        WHERE timestamp >= (strftime('%s', ?));
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(query, (start_date,))
+        fixture_ids = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        log_message("INFO", f"{len(fixture_ids)} fixture IDs encontrados a partir de {start_date}.", log_file=LOG_FILE)
+        return fixture_ids
+    except sqlite3.Error as e:
+        log_message("ERROR", f"Erro ao buscar fixture IDs: {e}", log_file=LOG_FILE)
+        return []
