@@ -1,4 +1,4 @@
-CREATE TABLE fixtures (
+CREATE TABLE IF NOT EXISTS fixtures (
     fixture_id INTEGER PRIMARY KEY,
     league_id INTEGER NOT NULL,
     season INTEGER NOT NULL,
@@ -13,13 +13,15 @@ CREATE TABLE fixtures (
     halftime_home_goals INTEGER,
     halftime_away_goals INTEGER
 );
-CREATE TABLE fixtures_id_processed (
+
+CREATE TABLE IF NOT EXISTS fixtures_id_processed (
     fixture_id INTEGER PRIMARY KEY,
     timestamp INTEGER,
     processed BOOLEAN DEFAULT 0 NOT NULL,
     FOREIGN KEY (fixture_id) REFERENCES fixtures(fixture_id)
 );
-CREATE TABLE teams (
+
+CREATE TABLE IF NOT EXISTS teams (
     team_id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     country TEXT,
@@ -27,22 +29,26 @@ CREATE TABLE teams (
     venue_id INTEGER,
     FOREIGN KEY (venue_id) REFERENCES venues(venue_id)
 );
-CREATE TABLE venues (
+
+CREATE TABLE IF NOT EXISTS venues (
     venue_id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     city TEXT,
     capacity INTEGER,
     surface TEXT
 );
-CREATE TABLE players (
+
+CREATE TABLE IF NOT EXISTS players (
     player_id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
-CREATE TABLE coachs (
+
+CREATE TABLE IF NOT EXISTS coachs (
     coach_id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
-CREATE TABLE fixture_events (
+
+CREATE TABLE IF NOT EXISTS fixture_events (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
     team_id INTEGER NOT NULL,
@@ -56,7 +62,7 @@ CREATE TABLE fixture_events (
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 );
 
-CREATE TABLE fixture_team_statistics (
+CREATE TABLE IF NOT EXISTS fixture_team_statistics (
     statistic_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
     team_id INTEGER NOT NULL,
@@ -81,7 +87,8 @@ CREATE TABLE fixture_team_statistics (
     FOREIGN KEY (fixture_id) REFERENCES fixtures(fixture_id),
     FOREIGN KEY (team_id) REFERENCES teams(team_id)
 );
-CREATE TABLE fixture_player_statistics (
+
+CREATE TABLE IF NOT EXISTS fixture_player_statistics (
     player_stat_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
     player_id INTEGER NOT NULL,
@@ -123,7 +130,8 @@ CREATE TABLE fixture_player_statistics (
     FOREIGN KEY (team_id) REFERENCES teams(team_id),
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 );
-CREATE TABLE fixture_startXI (
+
+CREATE TABLE IF NOT EXISTS fixture_startXI (
     start_xi_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
     team_id INTEGER NOT NULL,
@@ -138,7 +146,8 @@ CREATE TABLE fixture_startXI (
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (coach_id) REFERENCES coachs(coach_id)
 );
-CREATE TABLE fixture_substitutes (
+
+CREATE TABLE IF NOT EXISTS fixture_substitutes (
     sub_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
     team_id INTEGER NOT NULL,
@@ -172,8 +181,7 @@ CREATE TABLE odds (
     under_5_5 REAL,
     over_6_5 REAL,
     under_6_5 REAL,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (fixture_id) REFERENCES fixtures(fixture_id) ON DELETE CASCADE
+    updated_at TIMESTAMP
 );
 
 CREATE INDEX idx_fixtures_league_season ON fixtures (league_id, season);
