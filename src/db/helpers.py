@@ -1,6 +1,7 @@
 # TODO: Ajustar para incluir funcao log_message
 import sqlite3
 import time
+from datetime import datetime, timedelta, timezone
 from config.settings import DB_PATH, LOG_DIR
 from utils.logger import log_message
 
@@ -85,23 +86,41 @@ def get_coach_ids_from_fixtures(db_path=DB_PATH):
     except sqlite3.Error as e:
         raise Exception(f"Erro ao consultar os coach_id: {e}")
 
-def get_fixture_ids_after_date(start_date, db_path=DB_PATH):
+def get_fixture_ids_after_date(db_path=DB_PATH):
     """
-    Busca os fixture_id no banco de dados com timestamp maior ou igual à data especificada.
-    """
-    query = """
-        SELECT fixture_id
-        FROM fixtures
-        WHERE timestamp >= (strftime('%s', ?));
+    Busca os fixture_id no banco de dados dos últimos 7 dias até a data atual em UTC.
     """
     try:
+        # Calcular timestamps usando objetos timezone-aware
+        now = datetime.now(timezone.utc)  # Data atual em UTC com fuso horário
+        seven_days_ago = now - timedelta(days=7)  # UTC de 7 dias atrás
+
+        start_ts = int(seven_days_ago.timestamp())  # Timestamp para 7 dias atrás em UTC
+        now_ts = int(now.timestamp())  # Timestamp atual em UTC
+
+        # Log para depuração
+        log_message("DEBUG", f"Intervalo UTC: {seven_days_ago} ({start_ts}) - {now} ({now_ts})", log_file=LOG_FILE)
+
+        query = """
+            SELECT fixture_id
+            FROM fixtures_id_processed
+            WHERE timestamp BETWEEN ? AND ?;
+        """
+
+        # Executar consulta
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.execute(query, (start_date,))
+        cursor.execute(query, (start_ts, now_ts))
         fixture_ids = [row[0] for row in cursor.fetchall()]
         conn.close()
-        log_message("INFO", f"{len(fixture_ids)} fixture IDs encontrados a partir de {start_date}.", log_file=LOG_FILE)
+
+        # Log para monitorar resultados
+        log_message("INFO", f"{len(fixture_ids)} jogos encontrados no intervalo UTC.", log_file=LOG_FILE)
         return fixture_ids
+
     except sqlite3.Error as e:
         log_message("ERROR", f"Erro ao buscar fixture IDs: {e}", log_file=LOG_FILE)
+        return []
+    except Exception as e:
+        log_message("ERROR", f"Erro inesperado: {e}", log_file=LOG_FILE)
         return []

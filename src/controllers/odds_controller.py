@@ -23,13 +23,13 @@ LOG_FILE = LOG_DIR / "odds_controller.log"
 
 class OddsController:
     @staticmethod
-    def ingest_odds(bookmaker_id=3, start_date="2024-11-26"):
+    def ingest_odds(bookmaker_id=3):
         """
         Atualiza odds no banco de dados para fixtures com timestamp maior que a data inicial.
         """
         log_message("INFO", "Iniciando atualização de odds.", log_file=LOG_FILE)
 
-        fixture_ids = get_fixture_ids_after_date(start_date, db_path=DB_PATH)
+        fixture_ids = get_fixture_ids_after_date()
         if not fixture_ids:
             log_message("INFO", "Nenhum fixture encontrado para atualizar.", log_file=LOG_FILE)
             return {"message": "Nenhum fixture encontrado."}
