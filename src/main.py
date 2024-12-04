@@ -31,12 +31,12 @@ if __name__ == "__main__":
         log_message("INFO", "Iniciando fluxo de ingestão de dados.", log_file=LOG_FILE, to_console=True)
 
         #FixtureIDController.ingest_fixtures_ids()
-        #OddsController.ingest_odds()
         #run_update()
         #ingest_teams()
         #ingest_venues()
         #ingest_players()
         #ingest_coachs()
+        #OddsController.ingest_odds()
 
         log_message("INFO", "Fluxo concluído com sucesso!", log_file=LOG_FILE, to_console=True)
     except Exception as e:
