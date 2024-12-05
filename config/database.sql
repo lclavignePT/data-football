@@ -55,7 +55,7 @@ CREATE TABLE fixture_events (
     FOREIGN KEY (team_id) REFERENCES teams(team_id),
     FOREIGN KEY (player_id) REFERENCES players(player_id)
 );
-
+CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE fixture_team_statistics (
     statistic_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
@@ -151,7 +151,27 @@ CREATE TABLE fixture_substitutes (
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (coach_id) REFERENCES coachs(coach_id)
 );
-
+CREATE INDEX idx_fixtures_league_season ON fixtures (league_id, season);
+CREATE INDEX idx_fixtures_home_team ON fixtures (home_team_id);
+CREATE INDEX idx_fixtures_away_team ON fixtures (away_team_id);
+CREATE INDEX idx_fixtures_date ON fixtures (date);
+CREATE INDEX idx_fixtures_timestamp ON fixtures (timestamp);
+CREATE INDEX idx_fixtures_id_processed_status ON fixtures_id_processed (processed, timestamp);
+CREATE INDEX idx_teams_name ON teams (name);
+CREATE INDEX idx_teams_country ON teams (country);
+CREATE INDEX idx_players_name ON players (name);
+CREATE INDEX idx_fixture_events_fixture_team ON fixture_events (fixture_id, team_id);
+CREATE INDEX idx_fixture_events_player ON fixture_events (player_id);
+CREATE INDEX idx_fixture_events_type ON fixture_events (event_type, event_detail);
+CREATE INDEX idx_fixture_events_time ON fixture_events (time_elapsed);
+CREATE INDEX idx_team_statistics_fixture ON fixture_team_statistics (fixture_id, team_id);
+CREATE INDEX idx_team_statistics_expected_goals ON fixture_team_statistics (expected_goals);
+CREATE INDEX idx_player_statistics_fixture ON fixture_player_statistics (fixture_id, player_id, team_id);
+CREATE INDEX idx_player_statistics_rating ON fixture_player_statistics (rating);
+CREATE INDEX idx_startXI_fixture_team ON fixture_startXI (fixture_id, team_id);
+CREATE INDEX idx_startXI_player ON fixture_startXI (player_id);
+CREATE INDEX idx_substitutes_fixture_team ON fixture_substitutes (fixture_id, team_id);
+CREATE INDEX idx_substitutes_player ON fixture_substitutes (player_id);
 CREATE TABLE odds (
     odd_id INTEGER PRIMARY KEY AUTOINCREMENT,
     fixture_id INTEGER NOT NULL,
@@ -175,25 +195,4 @@ CREATE TABLE odds (
     updated_at TIMESTAMP,
     FOREIGN KEY (fixture_id) REFERENCES fixtures(fixture_id) ON DELETE CASCADE
 );
-
-CREATE INDEX idx_fixtures_league_season ON fixtures (league_id, season);
-CREATE INDEX idx_fixtures_home_team ON fixtures (home_team_id);
-CREATE INDEX idx_fixtures_away_team ON fixtures (away_team_id);
-CREATE INDEX idx_fixtures_date ON fixtures (date);
-CREATE INDEX idx_fixtures_timestamp ON fixtures (timestamp);
-CREATE INDEX idx_fixtures_id_processed_status ON fixtures_id_processed (processed, timestamp);
-CREATE INDEX idx_teams_name ON teams (name);
-CREATE INDEX idx_teams_country ON teams (country);
-CREATE INDEX idx_players_name ON players (name);
-CREATE INDEX idx_fixture_events_fixture_team ON fixture_events (fixture_id, team_id);
-CREATE INDEX idx_fixture_events_player ON fixture_events (player_id);
-CREATE INDEX idx_fixture_events_type ON fixture_events (event_type, event_detail);
-CREATE INDEX idx_fixture_events_time ON fixture_events (time_elapsed);
-CREATE INDEX idx_team_statistics_fixture ON fixture_team_statistics (fixture_id, team_id);
-CREATE INDEX idx_team_statistics_expected_goals ON fixture_team_statistics (expected_goals);
-CREATE INDEX idx_player_statistics_fixture ON fixture_player_statistics (fixture_id, player_id, team_id);
-CREATE INDEX idx_player_statistics_rating ON fixture_player_statistics (rating);
-CREATE INDEX idx_startXI_fixture_team ON fixture_startXI (fixture_id, team_id);
-CREATE INDEX idx_startXI_player ON fixture_startXI (player_id);
-CREATE INDEX idx_substitutes_fixture_team ON fixture_substitutes (fixture_id, team_id);
-CREATE INDEX idx_substitutes_player ON fixture_substitutes (player_id);
+CREATE UNIQUE INDEX idx_odds_fixture_id ON odds(fixture_id);
